@@ -48,9 +48,9 @@ Then execute the following commands :
 
 ```bash
 
-git clone https://github.com/<your-username>/php-oop-course-controle-1-DECODE-RD-2026
+git clone https://github.com/<your-username>/php-oop-course-controle-1-DECODE-RD-2025-2026
 
-cd php-oop-course-controle-1-DECODE-RD-2026/php-framework
+cd php-oop-course-controle-1-DECODE-RD-2025-2026/php-framework
 
 docker compose up -d --build
 
