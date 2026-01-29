@@ -54,9 +54,9 @@ cd php-oop-course-controle-1-DECODE-RD-2025-2026/php-framework
 
 docker compose up -d --build
 
-docker compose exec php-framework composer install
+docker compose exec php-framework-php composer install
 
-docker compose exec php-framework composer dump-autoload
+docker compose exec php-framework-php composer dump-autoload
 ```
 
 The application is now available on your machine at `127.0.0.1:8080` . To test if it is working correctly, go to `127.0.0.1:8080/test`. A page with `Test Controller` written on it should be displayed.
