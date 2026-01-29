@@ -32,7 +32,7 @@ class Request {
         }
 
         // Check if json
-        $contentType = $this->getHeaders()["Content-Type"] ?? $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'];
+        $contentType = $this->getHeaders()["Content-Type"] ?? $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? null;
         if (stripos($contentType, 'application/json') === false) {
             throw new \RuntimeException('Content-Type must be application/json');
         }

@@ -6,6 +6,9 @@ use App\Lib\Http\Request;
 use App\Lib\Http\Response;
 
 class ContactController extends AbstractController{
+    private const ALLOWED_FIELDS = ['email', 'subject', 'message'];
+    private const CONTACT_DIRECTORY = __DIR__.'/../../var/contacts';
+
     public function process(Request $request): Response{
         $body = $request->getBody();
 
@@ -15,14 +18,22 @@ class ContactController extends AbstractController{
         }
 
         // check if body has right properties and missing properties, otherwise 400
-        $allowed = ['email', 'subject', 'message'];
-
-        $extraKeys = array_diff(array_keys($body), $allowed);
+        $extraKeys = array_diff(array_keys($body), self::ALLOWED_FIELDS);
         if (!empty($extraKeys)) {
-            return new Response("Unexpected properties : {array_values($extraKeys) } \n Expected properties: {array_values($allowed)}", 400, []);
+            return new Response(
+                'Unexpected properties: ' . implode(', ', $extraKeys) .
+                "\nExpected properties: " . implode(', ', SELF::ALLOWED_FIELDS),
+                400,
+                []
+            );
         }
 
-        foreach ($allowed as $key) {
+        $missingKey = $this->getMissingKey($body);
+        if ($missingKey !== null) {
+            return new Response("Missing property: {$missingKey} \n", 400, []);
+        }
+
+        foreach (self::ALLOWED_FIELDS as $key) {
             if (!array_key_exists($key, $body)) {
                 return new Response("Missing property: {$key} \n", 400, []);
             }
@@ -37,14 +48,26 @@ class ContactController extends AbstractController{
             'dateOfCreation' => $currentTimeStamp,
             'dateOfLastUpdate' => $currentTimeStamp,
         ];
+        $fileName = $this->createFileName($contact['email'],$contact['dateOfCreation']);
+        file_put_contents(SELF::CONTACT_DIRECTORY.'/'.$fileName, json_encode($contact, JSON_PRETTY_PRINT));
 
-        $contact_dir = __DIR__.'/../../var/contacts';
-        $emailSafe = preg_replace('/[^A-Za-z0-9._@-]/', '_', $contact['email']); //may put a wrong email address ?
-        $timestamp = date('Y-m-d_H-i-s', $contact['dateOfCreation']);
-        $file_name = $timestamp.'_'.$emailSafe.'.json';
-        file_put_contents($contact_dir.'/'.$file_name, json_encode($contact, JSON_PRETTY_PRINT));
-
-        $responseBody = json_encode(['file' => $file_name]);
+        $responseBody = json_encode(['file' => $fileName]);
         return new Response($responseBody, 201, ['Content-Type' => 'application/json']);
     }
+
+    private function createFileName(string $email, int $timestamp): string{
+        $emailSafe = preg_replace('/[^A-Za-z0-9._@-]/', '_', $email); //may put a wrong email address ?
+        $formatted_timestamp = date('Y-m-d_H-i-s', $timestamp);
+        return $formatted_timestamp . '_' . $emailSafe . '.json';
+    }
+
+    private function getMissingKey(array $body): ?string {
+        foreach (self::ALLOWED_FIELDS as $key) {
+            if (!array_key_exists($key, $body)) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
 }
