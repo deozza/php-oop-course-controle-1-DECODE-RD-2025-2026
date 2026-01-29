@@ -24,7 +24,7 @@ class ContactController extends AbstractController{
 
         foreach ($allowed as $key) {
             if (!array_key_exists($key, $body)) {
-                return Response("Missing property: {$key} \n", 400, []);
+                return new Response("Missing property: {$key} \n", 400, []);
             }
         }
 
@@ -44,6 +44,7 @@ class ContactController extends AbstractController{
         $file_name = $timestamp.'_'.$emailSafe.'.json';
         file_put_contents($contact_dir.'/'.$file_name, json_encode($contact, JSON_PRETTY_PRINT));
 
-        return new Response("", 201, ['Content-Type' => 'application/json']);
+        $responseBody = json_encode(['file' => $file_name]);
+        return new Response($responseBody, 201, ['Content-Type' => 'application/json']);
     }
 }
