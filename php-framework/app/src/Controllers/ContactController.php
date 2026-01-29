@@ -39,7 +39,7 @@ class ContactController extends AbstractController{
         ];
 
         $contact_dir = __DIR__.'/../../var/contacts';
-        $emailSafe = preg_replace('/[^A-Za-z0-9_@-]/', '_', $contact['email']); //may put a wrong email address ?
+        $emailSafe = preg_replace('/[^A-Za-z0-9._@-]/', '_', $contact['email']); //may put a wrong email address ?
         $timestamp = date('Y-m-d_H-i-s', $contact['dateOfCreation']);
         $file_name = $timestamp.'_'.$emailSafe.'.json';
         file_put_contents($contact_dir.'/'.$file_name, json_encode($contact, JSON_PRETTY_PRINT));
