@@ -5,8 +5,28 @@
     "controller": "TestController"
   },
   {
-    "path": "/foobarr",
+    "path": "/contact",
+    "method": "POST",
+    "controller": "PostContactsController"
+  },
+  {
+    "path": "/contact",
     "method": "GET",
-    "controller": "FoobarrController"
+    "controller": "GetContactsController"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "GET",
+    "controller": "GetContactController"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "PATCH",
+    "controller": "UpdateContactController"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "DELETE",
+    "controller": "DeleteContactController"
   }
 ]
