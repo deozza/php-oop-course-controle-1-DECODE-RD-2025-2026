@@ -5,8 +5,8 @@
     "controller": "TestController"
   },
   {
-    "path": "/foobarr",
-    "method": "GET",
-    "controller": "FoobarrController"
+    "path": "/contact",
+    "method": "POST",
+    "controller": "ContactController"
   }
 ]
