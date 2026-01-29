@@ -3,17 +3,16 @@
 namespace App\Entities;
 
 class Contact{
-    const CONTACT_ID_FORMAT = '%s_%s.json';
     public string $email;
     public string $message;
     public string $subject;
-    private \DateTime $dateOfCreation;
-    private \DateTime $dateOfLastUpdate;
+    private int $dateOfCreation;
+    private int $dateOfLastUpdate;
 
 
     public function __construct()
     {
-        $this->dateOfCreation = new \DateTime();
+        $this->dateOfCreation = time();
         $this->dateOfLastUpdate = $this->dateOfCreation;
     }
     public function getDateOfCreation(): \DateTime {
@@ -25,7 +24,15 @@ class Contact{
     }
 
     public function getId(): string {
-        return sprintf(self::CONTACT_ID_FORMAT, $this->dateOfCreation->format('Y-m-d_h-i-s'), $this->email);
+        return $this->getFormatedTimestamp() . '_' . $this->getSafeEmail() . '.json';
+    }
+
+    private function getSafeEmail(): string{
+        return preg_replace('/[^A-Za-z0-9._@-]/', '_', $this->email); //may put a wrong email address ?
+    }
+
+    private function getFormatedTimestamp(): string{
+        return date('Y-m-d_H-i-s', $this->dateOfCreation);
     }
 
 }
