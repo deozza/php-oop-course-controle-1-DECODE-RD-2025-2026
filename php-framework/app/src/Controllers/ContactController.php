@@ -9,6 +9,6 @@ class ContactController extends AbstractController{
 
     public function process(Request $request): Response
     {
-        // TODO: Implement process() method.
+
     }
 }

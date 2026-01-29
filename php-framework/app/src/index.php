@@ -15,3 +15,6 @@ try {
 } catch(\Exception $e) {
     echo $e->getMessage();
 }
+
+
+var_dump($_SERVER['CONTENT_TYPE']);
