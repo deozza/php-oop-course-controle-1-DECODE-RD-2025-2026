@@ -6,12 +6,12 @@ use App\Lib\Controllers\AbstractController;
 use App\Lib\Http\Request;
 use App\Lib\Http\Response;
 
-class GetContactController extends AbstractController
+class DeleteContactController extends AbstractController
 {
     public function process(Request $request): Response
     {
-        // Vérifier que la méthode est GET
-        if ($request->checkMethod('GET') === false) {
+        // Vérifier que la méthode est DELETE
+        if ($request->checkMethod('DELETE') === false) {
             return new Response(json_encode(['error' => 'Method Not Allowed']), 405, ['Content-Type' => 'application/json']);
         }
 
@@ -32,23 +32,10 @@ class GetContactController extends AbstractController
             return new Response(json_encode(['error' => 'Contact not found']), 404, ['Content-Type' => 'application/json']);
         }
 
-        // Lire le contenu du fichier
-        $content = file_get_contents($filepath);
-        $contactData = json_decode($content, true);
-
-        if (!$contactData) {
-            return new Response(json_encode(['error' => 'Invalid contact data']), 500, ['Content-Type' => 'application/json']);
-        }
-
-        // Retourner le contact avec le format demandé
-        $contact = [
-            'email' => $contactData['email'],
-            'subject' => $contactData['subject'],
-            'message' => $contactData['message'],
-            'dateOfCreation' => $contactData['CreationDate'],
-            'dateOfLastUpdate' => $contactData['LastUpdateDate']
-        ];
+        // Supprimer le fichier
+        unlink($filepath);
         
-        return new Response(json_encode($contact), 200, ['Content-Type' => 'application/json']);
+        // Retourner 204 No Content
+        return new Response('', 204, []);
     }
 }

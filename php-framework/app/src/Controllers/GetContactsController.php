@@ -41,8 +41,8 @@ class GetContactsController extends AbstractController
                     'email' => $contactData['email'],
                     'subject' => $contactData['subject'],
                     'message' => $contactData['message'],
-                    'creationDate' => $contactData['CreationDate'],
-                    'lastUpdateDate' => $contactData['LastUpdateDate']
+                    'dateOfCreation' => $contactData['CreationDate'],
+                    'dateOfLastUpdate' => $contactData['LastUpdateDate']
                 ];
             }
         }

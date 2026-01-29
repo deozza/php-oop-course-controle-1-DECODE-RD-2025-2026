@@ -15,12 +15,12 @@ class UpdateContactController extends AbstractController
             return new Response(json_encode(['error' => 'Method Not Allowed']), 405, ['Content-Type' => 'application/json']);
         }
 
-        // Récupérer l'email depuis le path parameter
-        $emailToFind = $request->getPathParam('email');
+        // Récupérer le filename depuis le path parameter
+        $filename = $request->getPathParam('filename');
 
-        // Vérifier que le paramètre email est présent
-        if (empty($emailToFind)) {
-            return new Response(json_encode(['error' => 'Email parameter is required']), 400, ['Content-Type' => 'application/json']);
+        // Vérifier que le paramètre filename est présent
+        if (empty($filename)) {
+            return new Response(json_encode(['error' => 'Filename parameter is required']), 400, ['Content-Type' => 'application/json']);
         }
 
         // Vérifier que la requête n'est pas vide
@@ -54,55 +54,53 @@ class UpdateContactController extends AbstractController
 
         // Chemin du répertoire des contacts
         $dir = __DIR__ . '/../../var/contacts/';
+        $filepath = $dir . $filename;
 
-        // Vérifier si le répertoire existe
-        if (!is_dir($dir)) {
+        // Vérifier si le fichier existe
+        if (!file_exists($filepath)) {
             return new Response(json_encode(['error' => 'Contact not found']), 404, ['Content-Type' => 'application/json']);
         }
 
-        // Récupérer tous les fichiers JSON du répertoire
-        $files = glob($dir . '*.json');
+        // Lire le contenu du fichier
+        $content = file_get_contents($filepath);
+        $contactData = json_decode($content, true);
 
-        // Chercher le contact avec cet email
-        foreach ($files as $file) {
-            $content = file_get_contents($file);
-            $contactData = json_decode($content, true);
+        if (!$contactData) {
+            return new Response(json_encode(['error' => 'Invalid contact data']), 500, ['Content-Type' => 'application/json']);
+        }
 
-            if ($contactData && $contactData['email'] === $emailToFind) {
-                // Contact trouvé, mettre à jour les champs fournis
-                foreach ($allowedFields as $field) {
-                    if (isset($body[$field])) {
-                        $contactData[$field] = $body[$field];
-                    }
-                }
+        // Sauvegarder l'ancien email pour gérer le renommage du fichier
+        $oldEmail = $contactData['email'];
 
-                // Mettre à jour la date de dernière modification
-                $contactData['LastUpdateDate'] = time();
-
-                // Sauvegarder les modifications
-                file_put_contents($file, json_encode($contactData, JSON_PRETTY_PRINT));
-
-                // Si l'email a changé, renommer le fichier
-                if (isset($body['email']) && $body['email'] !== $emailToFind) {
-                    $newFilename = $contactData['CreationDate'] . '_' . $contactData['email'] . '.json';
-                    $newFilepath = $dir . $newFilename;
-                    rename($file, $newFilepath);
-                }
-
-                // Retourner le contact mis à jour
-                $updatedContact = [
-                    'email' => $contactData['email'],
-                    'subject' => $contactData['subject'],
-                    'message' => $contactData['message'],
-                    'dateOfCreation' => $contactData['CreationDate'],
-                    'dateOfLastUpdate' => $contactData['LastUpdateDate']
-                ];
-
-                return new Response(json_encode($updatedContact), 200, ['Content-Type' => 'application/json']);
+        // Mettre à jour les champs fournis
+        foreach ($allowedFields as $field) {
+            if (isset($body[$field])) {
+                $contactData[$field] = $body[$field];
             }
         }
 
-        // Contact non trouvé
-        return new Response(json_encode(['error' => 'Contact not found']), 404, ['Content-Type' => 'application/json']);
+        // Mettre à jour la date de dernière modification
+        $contactData['LastUpdateDate'] = time();
+
+        // Sauvegarder les modifications
+        file_put_contents($filepath, json_encode($contactData, JSON_PRETTY_PRINT));
+
+        // Si l'email a changé, renommer le fichier
+        if (isset($body['email']) && $body['email'] !== $oldEmail) {
+            $newFilename = $contactData['CreationDate'] . '_' . $contactData['email'] . '.json';
+            $newFilepath = $dir . $newFilename;
+            rename($filepath, $newFilepath);
+        }
+
+        // Retourner le contact mis à jour
+        $updatedContact = [
+            'email' => $contactData['email'],
+            'subject' => $contactData['subject'],
+            'message' => $contactData['message'],
+            'dateOfCreation' => $contactData['CreationDate'],
+            'dateOfLastUpdate' => $contactData['LastUpdateDate']
+        ];
+
+        return new Response(json_encode($updatedContact), 200, ['Content-Type' => 'application/json']);
     }
 }
