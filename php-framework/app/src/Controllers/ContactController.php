@@ -22,6 +22,10 @@ class ContactController extends AbstractController{
                 break;
             case 'PATCH':
                 return $this->processPatch($request);
+                break;
+            case 'DELETE':
+                return $this->processDelete($request);
+                break;
             default:
                 Return new Response('Method Not Allowed', 405, []);
         }
@@ -125,5 +129,10 @@ class ContactController extends AbstractController{
             return new Response("Contact not found \n", 404, []);
         }
         return $contact;
+    }
+
+    private function processDelete(Request $request): Response{
+
+
     }
 }

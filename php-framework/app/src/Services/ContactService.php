@@ -60,4 +60,8 @@ class ContactService{
 
         return $contact;
     }
+
+    public function deleteContactById(string $id): void{
+
+    }
 }
