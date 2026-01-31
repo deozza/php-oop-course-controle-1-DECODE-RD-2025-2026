@@ -26,10 +26,10 @@ class ContactService{
         $files = glob(SELF::CONTACT_DIRECTORY.'/*.json');
 
         foreach($files as $file){
-            $allContacts = array_merge(
-                $allContacts,
-                json_decode(file_get_contents($file), true)
-            );
+            $contact = json_decode(file_get_contents($file), true);
+            if (is_array($contact)){
+                $allContacts[] = $contact;
+            }
         }
         return $allContacts;
     }
