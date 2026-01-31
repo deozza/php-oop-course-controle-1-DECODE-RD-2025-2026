@@ -40,7 +40,6 @@ class ContactController extends AbstractController{
         $body = $this->getJsonBody($request);
         $this->isBodyValid($body,$request->getMethod());
 
-
         $contactService = new ContactService();
         $contact = $contactService->buildContact($body);
         $contactService->saveContact($contact);
@@ -60,11 +59,7 @@ class ContactController extends AbstractController{
     private function processGetById(Request $request): Response{
         $id = $request->getParams()['id'];
 
-        $contactService = new ContactService();
-        $contact = $contactService->getContactById($id);
-        if ($contact === null){
-            return new Response("Contact not found \n", 404, []);
-        }
+        $contact = $this->checkContactById($id);
         $contact = json_encode($contact);
 
         return new Response($contact,200, ['Content-type' => 'application/json']);
@@ -81,19 +76,24 @@ class ContactController extends AbstractController{
         $body = $this->getJsonBody($request);
         $this->isBodyValid($body,$request->getMethod());
 
+        $id = $request->getParams()['id'];
+        $this->checkContactById($id);
 
+        $contactService = new ContactService();
+        $contact = $contactService->patchContactById($id, $body);
+        $contact = json_encode($contact);
 
-        return new Response("Patch required \n", 400, []);
+        return new Response($contact,200, ['Content-type' => 'application/json']);
     }
 
-    private function getJsonBody(Request $request): array{
+    private function getJsonBody(Request $request): array|Response{
         if (!$this->isBodyJSON($request)){
             return new Response("JSON required \n", 400, []);
         }
         return json_decode($request->getBody(), true); //return arrays
     }
 
-    private function isBodyValid(array $body,string $method){
+    private function isBodyValid(array $body,string $method):bool|Response{
         $contactValidator = new ContactValidator();
         $res = true;
         switch ($method){
@@ -108,5 +108,14 @@ class ContactController extends AbstractController{
             return new Response("Invalid JSON body \n", 400, []);
         }
         return $res;
+    }
+
+    private function checkContactById(string $id):array|Response{
+        $contactService = new ContactService();
+        $contact = $contactService->getContactById($id);
+        if ($contact === null){
+            return new Response("Contact not found \n", 404, []);
+        }
+        return $contact;
     }
 }

@@ -45,5 +45,18 @@ class ContactService{
         }
         return $contact;
     }
-    
+
+    public function patchContactById(string $id, array $body): array{
+        $contact = $this->getContactById($id);
+
+        foreach ($body as $key => $value){
+            $contact[$key] = $value;
+        }
+        $contact['dateOfLastUpdate'] = time();
+
+        $filePath = self::CONTACT_DIRECTORY.'/'.$id.'.json';
+        file_put_contents($filePath, json_encode($contact, JSON_PRETTY_PRINT));
+
+        return $contact;
+    }
 }
