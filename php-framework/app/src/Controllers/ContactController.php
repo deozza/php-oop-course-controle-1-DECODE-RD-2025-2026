@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Entities\Contact;
 use App\Lib\Controllers\AbstractController;
 use App\Lib\Http\Request;
 use App\Lib\Http\Response;
@@ -67,6 +68,9 @@ class ContactController extends AbstractController{
         $id = $request->getParams()['id'];
 
         $contact = $this->checkContactById($id);
+        if($contact instanceof Response){
+            return $contact;
+        }
         $contact = json_encode($contact);
 
         return new Response($contact,200, ['Content-type' => 'application/json']);
@@ -80,14 +84,17 @@ class ContactController extends AbstractController{
     }
 
     private function processPatch(Request $request): Response{
+        $id = $request->getParams()['id'];
+        $isContactExisting = $this->checkContactById($id);
+        if($isContactExisting instanceof Response){
+            return $isContactExisting;
+        }
+
         $body = $this->getJsonBody($request);
         $validation = $this->isBodyValid($body,$request->getMethod());
         if(!is_bool($validation)){
             return $validation;
         }
-
-        $id = $request->getParams()['id'];
-        $this->checkContactById($id);
 
         $contactService = new ContactService();
         $contact = $contactService->patchContactById($id, $body);
