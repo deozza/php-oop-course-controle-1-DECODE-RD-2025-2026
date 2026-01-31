@@ -6,7 +6,7 @@ class ContactValidator{
     private const ALLOWED_FIELDS = ['email', 'subject', 'message'];
 
     public function isBodyValidPost(array $body): bool{
-        if($this->isBodyExtraFields($body)||$this->isBodyMissingFields()){
+        if($this->isBodyExtraFields($body)||$this->isBodyMissingFields($body)){
             return false;
         }
         return true;
@@ -21,18 +21,14 @@ class ContactValidator{
 
     private function isBodyExtraFields(array $body): bool{
         $extraFileds = array_diff(array_keys($body), self::ALLOWED_FIELDS); // return what's in array 1 but not in array2
-        if (!empty($extraFileds)) {
-            return false;
-        }
-        return true;
+
+        return !empty($extraFileds);
     }
 
     private function isBodyMissingFields(array $body): bool{
         $missingFileds = array_diff(self::ALLOWED_FIELDS,array_keys($body));
-        if (!empty($missingFileds)) {
-            return true;
-        }
-        return false;
+        return !empty($missingFileds);
+
     }
 
 
