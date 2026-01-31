@@ -34,4 +34,16 @@ class ContactService{
         return $allContacts;
     }
 
+    public function getContactById(string $id): ?array {
+        $filePath = self::CONTACT_DIRECTORY.'/'.$id;
+        if(!is_file($filePath)){
+            return null;
+        }
+        $contact = json_decode(file_get_contents($filePath), true);
+        if (!is_array($contact)){
+            return null;
+        }
+        return $contact;
+    }
+
 }

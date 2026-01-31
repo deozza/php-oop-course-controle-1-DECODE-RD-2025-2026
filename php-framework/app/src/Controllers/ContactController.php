@@ -54,7 +54,6 @@ class ContactController extends AbstractController{
     }
 
     private function processGetAll(Request $request): Response{
-
         $contactService = new ContactService();
         $allContacts = $contactService->getAllContacts();
         $allContacts = json_encode($allContacts);
@@ -63,6 +62,8 @@ class ContactController extends AbstractController{
     }
 
     private function processGetById(Request $request): Response{
+        $id = $request->getParams()['id'] ?? null;
+
 
 
         return new Response('yupee',200, ['Content-type' => 'application/json']);
@@ -70,11 +71,8 @@ class ContactController extends AbstractController{
 
     private function processGet(Request $request): Response{
         if ($request->getParams()){
-            $this->processGetById($request);
-        }else{
-            $this->processGetAll($request);
+            return $this->processGetById($request);
         }
-
+        return $this->processGetAll($request);
     }
-
 }
