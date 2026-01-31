@@ -62,11 +62,16 @@ class ContactController extends AbstractController{
     }
 
     private function processGetById(Request $request): Response{
-        $id = $request->getParams()['id'] ?? null;
+        $id = $request->getParams()['id'];
 
+        $contactService = new ContactService();
+        $contact = $contactService->getContactById($id);
+        if ($contact === null){
+            return new Response("Contact not found \n", 404, []);
+        }
+        $contact = json_encode($contact);
 
-
-        return new Response('yupee',200, ['Content-type' => 'application/json']);
+        return new Response($contact,200, ['Content-type' => 'application/json']);
     }
 
     private function processGet(Request $request): Response{
