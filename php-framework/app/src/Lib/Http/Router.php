@@ -35,9 +35,8 @@ class Router {
     
     private static function getConfig(): array {
         $routesConfigContent = file_get_contents(self::ROUTE_CONFIG_PATH);
-        $routesConfig = json_decode($routesConfigContent, true);
 
-        return $routesConfig;
+        return json_decode($routesConfigContent, true);
     } //get route.json
 
     private static function checkMethod(Request $request, array $route): bool {
