@@ -18,7 +18,7 @@ class ContactService{
 
     public function saveContact(Contact $contact){
         $fileName = $contact->getId();
-        file_put_contents(SELF::CONTACT_DIRECTORY.'/'.$fileName, json_encode($contact, JSON_PRETTY_PRINT));
+        file_put_contents(SELF::CONTACT_DIRECTORY.'/'.$fileName.'.json', json_encode($contact, JSON_PRETTY_PRINT));
     }
 
     public function getAllContacts(): array{

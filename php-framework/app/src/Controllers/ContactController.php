@@ -50,7 +50,8 @@ class ContactController extends AbstractController{
         $contact = $contactService->buildContact($body);
         $contactService->saveContact($contact);
 
-        return new Response(json_encode(['file' => $contact->getId()]), 201, ['Content-type' => 'application/json']);
+
+        return new Response(json_encode(['file' => $contact->getId().'.json']), 201, ['Content-type' => 'application/json']);
     }
 
     private function processGetAll(Request $request): Response{
