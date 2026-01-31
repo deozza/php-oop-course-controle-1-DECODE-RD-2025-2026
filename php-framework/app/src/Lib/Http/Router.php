@@ -15,9 +15,16 @@ class Router {
         $config = self::getConfig();
 
         foreach($config as $route) {
-            if(self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
+            if(self::checkMethod($request, $route) === false) { //  || self::checkUri($request, $route) === false
                 continue;
             }
+
+            $params =self::matchUriParams($request, $route);
+            if ($params === false) {
+                continue;
+            }
+
+            $request->setParams($params);
 
             $controller = self::getControllerInstance($route['controller']);
             return $controller->process($request);
@@ -28,11 +35,9 @@ class Router {
     
     private static function getConfig(): array {
         $routesConfigContent = file_get_contents(self::ROUTE_CONFIG_PATH);
-        $routesConfig = json_decode($routesConfigContent, true);
 
-        return $routesConfig;
-    }
-
+        return json_decode($routesConfigContent, true);
+    } //get route.json
 
     private static function checkMethod(Request $request, array $route): bool {
         return $request->getMethod() === $route['method'];
@@ -41,7 +46,20 @@ class Router {
     private static function checkUri(Request $request, array $route): bool {
         return $request->getUri() === $route['path'];
     }
-    
+
+    private static function matchUriParams(Request $request, array $route): array|bool {
+        $path = $route['path'];
+
+        $regex = preg_replace('#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#', '(?P<$1>[^/]+)', $path);
+        $regex = '#^' . $regex . '$#';
+
+        if (preg_match($regex, $request->getUri(), $matches)) {
+            return array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+        }
+        return false;
+    }
+
+
     private static function getControllerInstance(string $controller): AbstractController {
         $controllerClass = self::CONTROLLER_NAMESPACE_PREFIX . $controller;
 
