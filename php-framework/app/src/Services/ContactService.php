@@ -35,7 +35,7 @@ class ContactService{
     }
 
     public function getContactById(string $id): ?array {
-        $filePath = self::CONTACT_DIRECTORY.'/'.$id;
+        $filePath = self::CONTACT_DIRECTORY.'/'.$id.'.json';
         if(!is_file($filePath)){
             return null;
         }

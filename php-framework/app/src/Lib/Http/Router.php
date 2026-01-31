@@ -12,10 +12,10 @@ class Router {
     
 
     public static function route(Request $request): Response {
-        $config = self::getConfig(); //routes.json but array
+        $config = self::getConfig();
 
         foreach($config as $route) {
-            if(self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
+            if(self::checkMethod($request, $route) === false) { //  || self::checkUri($request, $route) === false
                 continue;
             }
 
